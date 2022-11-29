@@ -26,16 +26,16 @@ selected_reads = {}
 # for the first five, reverse reads 
 for i in range(10):
     read = ""
-    idx = random.randint(0, 69063)
+    idx = random.randint(0, 66281)
     for j in range(idx, idx+10):
-        read += result[j
+        read += result[j]
     if i < 5:
         read = read[::-1]
     selected_reads[idx] = read
-    
+
 # generate fastq file using the above reads 
 base = ""
-for i in range(800): 
+for i in range(700): 
     base += "#"
 
 with open(output_text, 'w') as f:
