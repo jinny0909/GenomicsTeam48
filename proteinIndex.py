@@ -3,17 +3,16 @@ from io import StringIO
 from Bio import SeqIO  
 
 def rotations(t):
-    # Return list of rotations of input string t
+    '''Return list of rotations of input string t'''
     tt = t * 2
     return [ tt[i:i+len(t)] for i in range(0, len(t)) ]
 
 def bwm(t):
-    # Return lexicographically sorted list of t’s rotations
+    '''Return lexicographically sorted list of t’s rotations'''
     return sorted(rotations(t))
 
 def suffixArray(s):
     satups = sorted([(s[i:], i) for i in range(0, len(s))])
-
     arr = [] 
     for s in satups: 
       arr.append(s[1])
@@ -21,7 +20,7 @@ def suffixArray(s):
     return arr
 
 def bwtViaBwm(t):
-    # Given T, returns BWT(T) by way of the BWM
+    '''Given T, returns BWT(T) by way of the BWM'''
     return ''.join(map(lambda x: x[-1], bwm(t)))
 
 
@@ -39,7 +38,9 @@ class FMIndex:
   def __init__(self, t=None, cpStep=None, saStep=None, readFile=None):
     '''Build a new FM index'''
     if readFile != None:
-      self.loadFromFile(readFile)
+      tots = self.loadFromFile(readFile)
+      self.getF(tots)
+
     elif t != None and cpStep!= None and saStep != None and readFile == None:
       self.bwt_t = bwtViaBwm(t)
       self.cpStep = cpStep
@@ -47,9 +48,10 @@ class FMIndex:
       tots = self.calcCheckpoints()
       self.getF(tots)
       self.calcSASample(t)
-      del tots
     else:
       print("ERROR: incorrect initialization")
+    del tots
+
   
   def loadFromFile(self, proteinIndexFile):
     '''Load a previously saved FM index from file'''
@@ -63,7 +65,7 @@ class FMIndex:
     #saStep
     #idx self.saSample[idx]
     #(for call saSamples)
-
+    tots = {}
     self.bwt_t = ""
     with open(proteinIndexFile, "r") as file:
       lines = file.readlines()
@@ -75,28 +77,39 @@ class FMIndex:
           c = bwtCompressed[i]
           i+=1
           numStr = ""
-          while(bwtCompressed[i] in "1234567890" and i < len(bwtCompressed)): #read digits
+          while(i < len(bwtCompressed) and bwtCompressed[i] in "1234567890"): #read digits
             numStr += bwtCompressed[i]
             i+=1
-          self.bwt_t += c * int(numStr) #add run to bwt_t
+          if numStr != "" :
+            self.bwt_t += c * int(numStr) #add run to bwt_t
+            if c in tots.keys():
+              tots[c] += int(numStr)
+            else:
+              tots[c] = int(numStr)
 
       self.cpStep = int(lines[2].strip()) #skip the !, begin reading checkpoints
       self.checkpoints = []
       j = 3
       while(lines[j][0]!="!"):
         checkpoint = {}
-        lsplit = lines[j].split(" ")
-        for e in lsplit:
-          char = lsplit[0]
-          num = int(lsplit[1:])
-          checkpoint[char] = num
-        self.checkpoints.append[checkpoint]
+        if len(lines[j].strip()) > 0:
+          lsplit = lines[j].strip().split(" ")
+          for e in lsplit:
+            char = e[0]
+            num = int(str(e[1:]))
+            checkpoint[char] = num
+        j+=1
+        self.checkpoints.append(checkpoint)
+
       j+=1 #skip the !
+      self.saStep = int(lines[j].strip())
+      j+=1
       self.saSample = {}
       for line in lines[j:]: #begin reading saSamples
-        lsplit = line.split(" ")
+        lsplit = line.strip().split(" ")
         self.saSample[int(lsplit[0])] = int(lsplit[1])
       file.close()
+      return tots
   
   def calcSASample(self, t):
     '''get the suffix array and save every saStep samples'''
@@ -160,8 +173,8 @@ class FMIndex:
 
   def LF(self, idx, c): 
     '''LF mapping using checkpoints'''
-    return self.F[c][0] + self.resolveCountFromCheckpoint(c, idx) #get the first occurance of the character in F. Get the rank of that occurance of c and add. Resolve non-checkpointed indexes using the checkpoints.
-  
+    return self.F[c][0] + self.resolveCountFromCheckpoint(c, idx) #get the first occurance of c in F. Get the rank of the occurance of c at idx by using checkpoints and add.
+
   def query(self, p):
     '''Find offsets of P in T using the FM index'''
     l = len(p)
