@@ -13,6 +13,8 @@ def precalculation(ref):
     count = dict()
     O = dict()
     O_rev = dict()
+    proteinIDs = dict()
+    pro_num = 1
     tots = dict()
     tots2 = dict()
 
@@ -21,6 +23,9 @@ def precalculation(ref):
     for q in range(n):
         if ref[q] not in alphabet and ref[q] != '$':
             alphabet.append(ref[q])
+        if ref[q] == '&':
+            proteinIDs[q] = pro_num
+            pro_num += 1
 
     for letter in alphabet:
         count[letter] = 0
@@ -65,7 +70,7 @@ def precalculation(ref):
         for char in tots2.keys():
             O_rev[char].append(tots2[char])
 
-    return SA, bwt, count, O, O_rev, n, alphabet
+    return SA, bwt, count, O, O_rev, n, alphabet, proteinIDs
 
 
 def inexact(W, z, SA, n, C, O, O_rev, alpha):
@@ -133,23 +138,43 @@ def inex_recur(W, i, z, k, l, D, C, O, alphabet):
     return I
 
 
-# main
-reference = """MENNSRTMPHIRRTTHIMKFAHRNSFDFHFFNAR@MFENITAAPADPILGLADLFRADERPGKINLGIGVYKDETGKTPVLTSVKKAEQYLLENE
-TTKNYLGIDGIPEFGRCTQELLFGKGSALINDKRARTAQTPGGTGALRVAADFLAKNTSVKRVWVSNPSWPNHKSVFNSAGLEVREYAYYDAENHTLDFDALINSLNEAQAGDVVLFHGC
-CHNPTGIDPTLEQWQTLAQLSVEKGWLPLFDFAYQGFARGLEEDAEGLRAFAAMHKELIVASSYSKNFGLYNERVGACTLVAADSETVDRAFSQMKAAIRANYSNPPAHGASVVATILSN
-DALRAIWEQELTDMRQRIQRMRQLFVNTLQEKGANRDFSFIIKQNGMFSFSGLTKEQVLRLREEFGVYAVASGRVNVAGMTPDNMAPLCEAIVAVL"""
+def bwa(reference, read):
+    # main
+    reference = """MENNSRTMPHIRRTTHIMKFAHRNSFDFHFFNAR&MFENITAAPADPILGLADLFRADERPGKINLGIGVYKDETGKTPVLTSVKKAEQYLLENE
+    TTKNYLGIDGIPEFGRCTQELLFGKGSALINDKRARTAQTPGGTGALRVAADFLAKNTSVKRVWVSNPSWPNHKSVFNSAGLEVREYAYYDAENHTLDFDALINSLNEAQAGDVVLFHGC
+    CHNPTGIDPTLEQWQTLAQLSVEKGWLPLFDFAYQGFARGLEEDAEGLRAFAAMHKELIVASSYSKNFGLYNERVGACTLVAADSETVDRAFSQMKAAIRANYSNPPAHGASVVATILSN
+    DALRAIWEQELTDMRQRIQRMRQLFVNTLQEKGANRDFSFIIKQNGMFSFSGLTKEQVLRLREEFGVYAVASGRVNVAGMTPDNMAPLCEAIVAVL&"""
 
-read = "MENNSRTMPHIRRTTHIMKFAHRNSFDFHF"
+    read = "GRVNVAGMTPDNMAPLCEAIVAVL"
 
-# add $ to string
-reference = reference + '$'
+    # add $ to string
+    reference = reference + '$'
 
-# build datastructures (5 of them; BWT, SA, reference alphabet, C and OCC arrays)
-array, bwt, c, O, O_rev, length, a = precalculation(reference)
-print("\n\nReference: \"%s\"" % reference)
+    # build datastructures (5 of them; BWT, SA, reference alphabet, C and OCC arrays)
+    array, bwt, c, O, O_rev, length, a, proteins = precalculation(reference)
+    print("\n\nReference: \"%s\"" % reference[0:len(reference) - 1])
 
-print("Read: \"%s\"\nMax Difference Threshold: %d\n" % (read, 0))
-matches, D = inexact(read, 0, array, length, c, O, O_rev, a)
-# print("D array:")
-# print(D)
-print("%d match(es) at position(s): %s \n\n" % (len(matches), matches))
+    print("Read: \"%s\"\nMax Difference Threshold: %d\n" % (read, 0))
+    matches, D = inexact(read, 0, array, length, c, O, O_rev, a)
+
+    # check if match overlaps with terminator
+    threshold = len(read) * 0.8
+    next = 0
+    output = []
+    for match in matches:
+        for p in proteins.keys():
+            if match < p:
+                next = p
+                break
+
+        # if terminator is in the middle
+        if match + threshold > next:
+            # remove
+            matches.remove(match)
+        else:
+            output.append(proteins[next])
+
+    print("%d match(es) at position(s): %s \n" % (len(matches), matches))
+    print("Matched proteins: %s" % output)
+
+    return output
