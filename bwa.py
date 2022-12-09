@@ -70,7 +70,7 @@ def precalculation(ref):
         for char in tots2.keys():
             O_rev[char].append(tots2[char])
 
-    return SA, bwt, count, O, O_rev, n, alphabet, proteinIDs
+    return SA, count, O, O_rev, n, alphabet, proteinIDs
 
 
 def inexact(W, z, SA, n, C, O, O_rev, alpha):
@@ -109,12 +109,23 @@ def calculateD(W, n, C, O_rev):
 #         D.append(z) #TODO: not substring
 #     return D
 
+def check_D(D, i):
+    if i < 0:
+        return 0
+    else:
+        return D[i]
+
+def check_O(O, char, i):
+    if i < 0:
+        return 0
+    else:
+        return O[char][i]
 
 def inex_recur(W, i, z, k, l, D, C, O, alphabet):
     tempset = set()
 
     # too many differences have been encountered
-    if z < D[i]:
+    if z < check_D(D, i):
         return set()
     if i < 0:  # entire query matched
         for m in range(k, l + 1):  ## TODO: check
@@ -127,8 +138,8 @@ def inex_recur(W, i, z, k, l, D, C, O, alphabet):
                            alphabet))  # move down query string. Insertion
     for char in alphabet:
         # find the SA interval
-        K = C[char] + O[char][k - 1] + 1
-        L = C[char] + O[char][l]
+        K = C[char] + check_O(O, char, k - 1) + 1
+        L = C[char] + check_O(O, char, l)
         if K <= L:  # if the substring found
             I = I.union(inex_recur(W, i, z - 1, K, L, D, C, O, alphabet))  # Deletion
             if char == W[i]:  # correct alignment
@@ -138,29 +149,14 @@ def inex_recur(W, i, z, k, l, D, C, O, alphabet):
     return I
 
 
-def bwa(reference, read):
-    # main
-    reference = """MENNSRTMPHIRRTTHIMKFAHRNSFDFHFFNAR&MFENITAAPADPILGLADLFRADERPGKINLGIGVYKDETGKTPVLTSVKKAEQYLLENE
-    TTKNYLGIDGIPEFGRCTQELLFGKGSALINDKRARTAQTPGGTGALRVAADFLAKNTSVKRVWVSNPSWPNHKSVFNSAGLEVREYAYYDAENHTLDFDALINSLNEAQAGDVVLFHGC
-    CHNPTGIDPTLEQWQTLAQLSVEKGWLPLFDFAYQGFARGLEEDAEGLRAFAAMHKELIVASSYSKNFGLYNERVGACTLVAADSETVDRAFSQMKAAIRANYSNPPAHGASVVATILSN
-    DALRAIWEQELTDMRQRIQRMRQLFVNTLQEKGANRDFSFIIKQNGMFSFSGLTKEQVLRLREEFGVYAVASGRVNVAGMTPDNMAPLCEAIVAVL&"""
-
-    read = "GRVNVAGMTPDNMAPLCEAIVAVL"
-
-    # add $ to string
-    reference = reference + '$'
-
-    # build datastructures (5 of them; BWT, SA, reference alphabet, C and OCC arrays)
-    array, bwt, c, O, O_rev, length, a, proteins = precalculation(reference)
-    print("\n\nReference: \"%s\"" % reference[0:len(reference) - 1])
-
-    print("Read: \"%s\"\nMax Difference Threshold: %d\n" % (read, 0))
-    matches, D = inexact(read, 0, array, length, c, O, O_rev, a)
+def bwa(read, array, c, O, O_rev, length, a, proteins, mismatch):
+    print("Read: \"%s\"\nMax Difference Threshold: %d\n" % (read, mismatch))
+    matches, D = inexact(read, mismatch, array, length, c, O, O_rev, a)
 
     # check if match overlaps with terminator
     threshold = len(read) * 0.8
     next = 0
-    output = []
+    output = set()
     for match in matches:
         for p in proteins.keys():
             if match < p:
@@ -172,9 +168,9 @@ def bwa(reference, read):
             # remove
             matches.remove(match)
         else:
-            output.append(proteins[next])
+            output.add(proteins[next])
 
-    print("%d match(es) at position(s): %s \n" % (len(matches), matches))
+    print("%d match(es)\n" % (len(output)))
     print("Matched proteins: %s" % output)
 
     return output
