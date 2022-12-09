@@ -130,7 +130,8 @@ class FMIndex:
     '''	calculate ranks for each letter and save checkpoints every cpStep'''
     tots	= {}
     self.checkpoints	=	[]
-    for	i, c	in	enumerate(self.bwt_t):
+    for	i in range(len(self.bwt_t)):
+      c = self.bwt_t[i]
       if i % self.cpStep == 0:
         self.checkpoints.append(tots.copy())
       if c in tots.keys():
@@ -153,26 +154,26 @@ class FMIndex:
     checkpoints = self.checkpoints
     bwt_t = self.bwt_t
     
-    checki = round(idx/cpStep)
+    checki = round(idx/cpStep) #checkpoint to start from
     if checki >= len(checkpoints):
-      checki = len(checkpoints) - 1
+      checki = len(checkpoints) - 1 
     checkpointedIdx = checki * cpStep
 
-    if c in checkpoints[checki].keys():
+    if c in checkpoints[checki].keys(): #Set count to the checkpoint value
       count = checkpoints[checki][c]
     else:
       count = 0      
 
-    diff = 0
-    for i in range(min(idx, checkpointedIdx), max(idx, checkpointedIdx)):
+    diff = 0 
+    for i in range(min(idx, checkpointedIdx), max(idx, checkpointedIdx)): #count difference between idx and checkpointed idx
       if bwt_t[i] == c:
         diff += 1
 
-    if idx > checkpointedIdx:
+    if idx > checkpointedIdx: #add or subtract accordingly
       count += diff
     else:
       count -= diff
-    
+      
     return count
 
   def LF(self, idx, c): 
@@ -182,9 +183,9 @@ class FMIndex:
   def query(self, p):
     '''Find offsets of P in T using the FM index'''
     l = len(p)
-    searchRange = (0, len(self.bwt_t))
+    searchRange = (0, len(self.bwt_t)) #rows of F to search
     for i in range(l):
-      c = p[l-1-i]
+      c = p[l-1-i] #search each character from the end of P
       lower = self.LF(searchRange[0], c)
       upper = self.LF(searchRange[1], c)
       searchRange = (lower, upper)
@@ -197,13 +198,12 @@ class FMIndex:
     '''Use the SA sample to resolve offset at position idx in bwt_t for the original string'''
     steps = 0
     i = idx 
-    while self.bwt_t[i] != "$": #if we get all the way to $ we have reached the end of the string
-      if i in self.saSample.keys():
+    while self.bwt_t[i] != "$": #if we get all the way to $ we have reached the end of the string since it is always first
+      if i in self.saSample.keys(): #keep traversing backwards until we reach a sampled index
         steps += self.saSample[i]
         break
       steps += 1
       i = self.LF(i, self.bwt_t[i])
-    
     return steps
   
   def getProteinFromOffset(self, offset):
@@ -216,9 +216,7 @@ class FMIndex:
       for i in range(0, len(k)-1):
         if k[i]<= offset and offset < k[i+1]:
           return self.pIDs[k[i]]
-      return -1
-
-        
+      return -1     
 
   def encode(self):
     '''Encode this FM index for easy write to file'''
@@ -236,7 +234,7 @@ class FMIndex:
     lastC = self.bwt_t[0]
     count = 0
     bwtStr = ""
-    for i, c in enumerate(self.bwt_t):
+    for c in self.bwt_t:
       if c == lastC:
         count+=1
       else:
