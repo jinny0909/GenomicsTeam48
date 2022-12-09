@@ -6,7 +6,7 @@ def reverseComplement(seq):
     if c in 'ACGT':
       output += complement[c]
 
-  return output
+  return output[::-1]
 
 def transcribe(seq):
   output = ""
@@ -15,20 +15,30 @@ def transcribe(seq):
       output += c
     elif c == "T":
       output += "U"
+  return output
 
 def getRF(seq):
   # forward
   seqs = []
-  seqs.append(translate(seq))
-  seqs.append(translate(seq[1:]))
-  seqs.append(translate(seq[2:]))
+  print(seq)
+  print(seq[1:])
+  print(seq[2:])
+  seqs.append(translate(transcribe(seq)))
+  seqs.append(translate(transcribe(seq[1:])))
+  seqs.append(translate(transcribe(seq[2:])))
 
   # reverse
   rev = reverseComplement(seq)
+  print(rev)
+  print(rev[:len(rev)-1])
+  print(rev[:len(rev)-2])
   seqs.append(translate(rev))
-  seqs.append(translate(rev[1:]))
+  seqs.append(translate((rev[1:])))
   seqs.append(translate(rev[2:]))
 
+  print(seqs)
+  for s in seqs: 
+    print(len(s))
   output = bestFrame(seqs)
   return output
 
