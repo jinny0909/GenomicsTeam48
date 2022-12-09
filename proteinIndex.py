@@ -157,14 +157,14 @@ class FMIndex:
     if c in checkpoints[checki].keys():
       count = checkpoints[checki][c]
     else:
-      count = 0
-    
+      count = 0      
+
     diff = 0
     for i in range(min(idx, checkpointedIdx), max(idx, checkpointedIdx)):
       if bwt_t[i] == c:
         diff += 1
 
-    if idx < checkpointedIdx:
+    if idx > checkpointedIdx:
       count += diff
     else:
       count -= diff
@@ -198,7 +198,7 @@ class FMIndex:
         steps += self.saSample[i]
         break
       steps += 1
-      i = self._lf(i, self.bwt_t[i])
+      i = self.LF(i, self.bwt_t[i])
     
     return steps
   
