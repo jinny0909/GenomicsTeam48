@@ -40,7 +40,7 @@ class FMIndex:
     if readFile != None:
       tots = self.loadFromFile(readFile)
       self.getF(tots)
-
+      del tots
     elif t != None and cpStep!= None and saStep != None and readFile == None:
       self.bwt_t = bwtViaBwm(t)
       self.cpStep = cpStep
@@ -48,9 +48,9 @@ class FMIndex:
       tots = self.calcCheckpoints()
       self.getF(tots)
       self.calcSASample(t)
+      del tots
     else:
       print("ERROR: incorrect initialization")
-    del tots
 
   
   def loadFromFile(self, proteinIndexFile):
@@ -154,8 +154,8 @@ class FMIndex:
       checki = len(checkpoints) - 1
     checkpointedIdx = checki * cpStep
 
-    if c in checkpoints[checkpointedIdx].keys():
-      count = checkpoints[checkpointedIdx][c]
+    if c in checkpoints[checki].keys():
+      count = checkpoints[checki][c]
     else:
       count = 0
     
