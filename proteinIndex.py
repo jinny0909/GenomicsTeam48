@@ -208,8 +208,6 @@ class FMIndex:
   
   def getProteinFromOffset(self, offset):
     '''Use stored mapping of offsets in original text to protein ID'''
-    gtl = False
-    lastOffset = 0
     k = self.pIDs.keys()
     k.sort()
     if offset >= k[-1]:
