@@ -33,6 +33,7 @@ class FMIndex:
   #F: representation of first column, maps letter -> range
   #saStep: step for SA offsets fo save
   #saSample: suffix array sample saving 1/saStep rows
+  #pIDs: maps offset in original string to the name of the protein
 
 
   def __init__(self, t=None, cpStep=None, saStep=None, readFile=None):
@@ -110,6 +111,9 @@ class FMIndex:
         self.saSample[int(lsplit[0])] = int(lsplit[1])
       file.close()
       return tots
+  
+  def savePIDs(self, p):
+    self.pIDs = p
   
   def calcSASample(self, t):
     '''get the suffix array and save every saStep samples'''
@@ -202,6 +206,22 @@ class FMIndex:
     
     return steps
   
+  def getProteinFromOffset(self, offset):
+    '''Use stored mapping of offsets in original text to protein ID'''
+    gtl = False
+    lastOffset = 0
+    k = self.pIDs.keys()
+    k.sort()
+    if offset >= k[-1]:
+      return self.pIDs[k[-1]]
+    else:
+      for i in range(0, len(k)-1):
+        if k[i]<= offset and offset < k[i+1]:
+          return self.pIDs[k[i]]
+      return -1
+
+        
+
   def encode(self):
     '''Encode this FM index for easy write to file'''
     #Format: 
@@ -261,13 +281,14 @@ def buildProteinIndex(proteinIDFile, cpStep, saStep):
     cData=''.join(response.text)
     Seq=StringIO(cData)
     pSeq=SeqIO.read(Seq,'fasta')
-    proteinIDs[pos] = pSeq.id #map offset to the protein ID
+    proteinIDs[pos] = pSeq.id 
     pos += len(pSeq.seq) + 1
     t += pSeq.seq + "&" #use & as terminator character for each protein sequence
   
   t += "$"
   del pIDs
   proteinIndex = FMIndex(t, cpStep, saStep)
+  proteinIndex.savePIDs(proteinIDs)
   return proteinIndex
 
 def saveProteinIndex(saveFile, proteinIndex):
