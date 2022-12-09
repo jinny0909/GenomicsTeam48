@@ -3,7 +3,7 @@ def reverseComplement(seq):
   complement = {"A": "U", "U": "A", "T": "A", "C": "G", "G": "C"}
   output = ''
   for c in seq: 
-    if c in 'ACGT':
+    if c in 'ACGTU':
       output += complement[c]
 
   return output[::-1]
@@ -21,9 +21,9 @@ def getRF(seq):
   # forward
   seqs = []
 
-  seqs.append(translate(transcribe(seq)))
-  seqs.append(translate(transcribe(seq[1:])))
-  seqs.append(translate(transcribe(seq[2:])))
+  seqs.append(translate(seq))
+  seqs.append(translate(seq[1:]))
+  seqs.append(translate(seq[2:]))
 
   # reverse
   rev = reverseComplement(seq)
@@ -73,8 +73,8 @@ def longestORF(seq):
       current = 0
     else:
       current += 1
-
-  longest = current
+  if current > longest:
+    longest = current
 
   return longest
 
@@ -86,6 +86,6 @@ def bestFrame(seqs):
     if ORF > longest:
       best.append(s)
       longest = ORF
-    elif ORF == longest:
+    elif abs(ORF - longest) <= 1:
       best.append(s)
   return best
