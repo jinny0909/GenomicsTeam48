@@ -19,7 +19,7 @@ def precalculation(ref):
     tots2 = dict()
 
     # alphabet
-    alphabet = []
+    alphabet = ['*']
     for q in range(n):
         if ref[q] not in alphabet and ref[q] != '$':
             alphabet.append(ref[q])
