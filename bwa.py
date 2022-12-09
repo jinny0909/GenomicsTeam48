@@ -70,7 +70,7 @@ def precalculation(ref):
         for char in tots2.keys():
             O_rev[char].append(tots2[char])
 
-    return SA, bwt, count, O, O_rev, n, alphabet, proteinIDs
+    return SA, count, O, O_rev, n, alphabet, proteinIDs
 
 
 def inexact(W, z, SA, n, C, O, O_rev, alpha):
@@ -138,22 +138,7 @@ def inex_recur(W, i, z, k, l, D, C, O, alphabet):
     return I
 
 
-def bwa(reference, read):
-    # main
-    reference = """MENNSRTMPHIRRTTHIMKFAHRNSFDFHFFNAR&MFENITAAPADPILGLADLFRADERPGKINLGIGVYKDETGKTPVLTSVKKAEQYLLENE
-    TTKNYLGIDGIPEFGRCTQELLFGKGSALINDKRARTAQTPGGTGALRVAADFLAKNTSVKRVWVSNPSWPNHKSVFNSAGLEVREYAYYDAENHTLDFDALINSLNEAQAGDVVLFHGC
-    CHNPTGIDPTLEQWQTLAQLSVEKGWLPLFDFAYQGFARGLEEDAEGLRAFAAMHKELIVASSYSKNFGLYNERVGACTLVAADSETVDRAFSQMKAAIRANYSNPPAHGASVVATILSN
-    DALRAIWEQELTDMRQRIQRMRQLFVNTLQEKGANRDFSFIIKQNGMFSFSGLTKEQVLRLREEFGVYAVASGRVNVAGMTPDNMAPLCEAIVAVL&"""
-
-    read = "GRVNVAGMTPDNMAPLCEAIVAVL"
-
-    # add $ to string
-    reference = reference + '$'
-
-    # build datastructures (5 of them; BWT, SA, reference alphabet, C and OCC arrays)
-    array, bwt, c, O, O_rev, length, a, proteins = precalculation(reference)
-    print("\n\nReference: \"%s\"" % reference[0:len(reference) - 1])
-
+def bwa(read, array, c, O, O_rev, length, a, proteins):
     print("Read: \"%s\"\nMax Difference Threshold: %d\n" % (read, 0))
     matches, D = inexact(read, 0, array, length, c, O, O_rev, a)
 
