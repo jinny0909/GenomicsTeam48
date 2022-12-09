@@ -47,6 +47,7 @@ def proteinToDNA(seq):
     for c in text: 
         output += complement[c]
 
+    return output
 
 # main: call this function with the given format 
 # proteinToDNA("FLIMVSPTAYHQNKDECWRG")
