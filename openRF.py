@@ -20,25 +20,18 @@ def transcribe(seq):
 def getRF(seq):
   # forward
   seqs = []
-  print(seq)
-  print(seq[1:])
-  print(seq[2:])
+
   seqs.append(translate(transcribe(seq)))
   seqs.append(translate(transcribe(seq[1:])))
   seqs.append(translate(transcribe(seq[2:])))
 
   # reverse
   rev = reverseComplement(seq)
-  print(rev)
-  print(rev[:len(rev)-1])
-  print(rev[:len(rev)-2])
+
   seqs.append(translate(rev))
   seqs.append(translate((rev[1:])))
   seqs.append(translate(rev[2:]))
 
-  print(seqs)
-  for s in seqs: 
-    print(len(s))
   output = bestFrame(seqs)
   return output
 
