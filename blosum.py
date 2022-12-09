@@ -39,12 +39,12 @@ def localAlignment(x, y, gap_default, gap_score, gap = True):
       0) # empty
       argmax = np.where(V == V.max())
 
-  print("PERFECT alignment score should be: \n")
-  print(perfect_score)
+  #print("PERFECT alignment score should be: \n")
+  #print(perfect_score)
 
-  print("Actual alignment score: \n")
-  print(int(V[argmax]))
-  return int(V[argmax])
+  #print("Actual alignment score: \n")
+  #print(int(V[argmax]))
+  return perfect_score, int(V[argmax])
 
 
 
