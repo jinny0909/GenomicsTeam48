@@ -26,6 +26,9 @@ def localAlignment(x, y, gap_default, gap_score, gap = True):
     "Y":{"C":-2,"S":-2, "T":-2, "P":-3, "A":-2, "G":-3, "N":-2, "D":-3, "E":-2, "Q":-1, "H":2,  "R":-2, "K":-2, "M":-1, "I":-1, "L":-1, "V":-1, "F":3,  "Y":7,  "W":2},
     "W":{"C":-2,"S":-3, "T":-3, "P":-4, "A":-3, "G":-2, "N":-4, "D":-4, "E":-3, "Q":-2, "H":-2, "R":-3, "K":-3, "M":-1, "I":-3, "L":-2, "V":-3, "F":1,  "Y":2,  "W":11}}
   
+  perfect_score = 0 
+  for c in y: 
+    perfect_score += BLOSUM62[c][c]
   
   V = np.zeros((len(x)+1, len(y)+1), dtype=int)
   for i in range(1, len(x)+1):
@@ -36,7 +39,12 @@ def localAlignment(x, y, gap_default, gap_score, gap = True):
       0) # empty
       argmax = np.where(V == V.max())
 
-  return int(V[argmax])
+  #print("PERFECT alignment score should be: \n")
+  #print(perfect_score)
+
+  #print("Actual alignment score: \n")
+  #print(int(V[argmax]))
+  return perfect_score, int(V[argmax])
 
 
 
