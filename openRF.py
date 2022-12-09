@@ -16,6 +16,22 @@ def transcribe(seq):
     elif c == "T":
       output += "U"
 
+def getRF(seq):
+  # forward
+  seqs = []
+  seqs.append(translate(seq))
+  seqs.append(translate(seq[1:]))
+  seqs.append(translate(seq[2:]))
+
+  # reverse
+  rev = reverseComplement(seq)
+  seqs.append(translate(rev))
+  seqs.append(translate(rev[1:]))
+  seqs.append(translate(rev[2:]))
+
+  output = bestFrame(seqs)
+  return output
+
 def translate(seq):
   lookup = {
   "UUU": "F", "CUU": "L", "AUU": "I", "GUU": "V",
@@ -53,16 +69,20 @@ def longestORF(seq):
         longest = current
       current = 0
     else:
-      current+=1
+      current += 1
+
+  longest = current
+
   return longest
 
 def bestFrame(seqs):
   best = []
-  longestORF = 0
+  longest = 0
   for s in seqs:
     ORF = longestORF(s)
-    if ORF > longestORF:
-      best = [s]
-    elif ORF == longestORF:
-      best.append([s])
+    if ORF > longest:
+      best.append(s)
+      longest = ORF
+    elif ORF == longest:
+      best.append(s)
   return best
