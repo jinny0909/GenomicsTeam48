@@ -84,11 +84,15 @@ for i in range(5):
     test(DNA, 0, 0)
 
 # Check that mismatch gives no Exact Matches
-print("\nNO MATCHES SHOULD OCCUR")
+print("\nNO MATCHES SHOULD OCCUR FOR FOLLOWING MISMATCHES")
 print("-----------------------------------------")
+print("Test 1")
 test(dnas[0][0:10] + 'C' + dnas[0][10:], 0, 1) # insertion
+print("Test 2")
 test(dnas[1][0:9] + dnas[1][10:], 0, 1) # deletions
+print("Test 3")
 test(dnas[2][0:9] + 'A' + dnas[2][10:], 0, 1) # substitution
+print("Test 4")
 test(dnas[3][::-1], 0, 1) # reverse should not appear anywhere
 
 print("\nTest Inexact - More Mismatch")
