@@ -3,6 +3,7 @@
 """Burrows-Wheeler Alignment - Protein Search
 This is a simple implementation of the BMA for protein sequencing."""
 
+# Precalculation method to parse reference string and returns all data structures needed
 def precalculation(ref):
     # create variables
     n = len(ref)
@@ -73,7 +74,7 @@ def precalculation(ref):
 
     return SA, count, O, O_rev, n, alphabet, proteinIDs
 
-
+# call this for matching
 def inexact(W, z, SA, n, C, O, O_rev, alpha):
     D = calculateD(W, n, C, O_rev)
     SA_indices = inex_recur(W, len(W) - 1, z, 1, n - 1, D, C, O, alpha)
@@ -97,18 +98,21 @@ def calculateD(W, n, C, O_rev):
 
     return D
 
+# makes sure index calling D is valid
 def check_D(D, i):
     if i < 0:
         return 0
     else:
         return D[i]
 
+# makes sure index calling O is valid
 def check_O(O, char, i):
     if i < 0:
         return 0
     else:
         return O[char][i]
 
+# recursion function for alignment
 def inex_recur(W, i, z, k, l, D, C, O, alphabet):
     tempset = set()
 
@@ -137,6 +141,8 @@ def inex_recur(W, i, z, k, l, D, C, O, alphabet):
     return I
 
 
+# overall function that uses BWA
+# Should be called after precalculation
 def bwa(read, array, c, O, O_rev, length, a, proteins, mismatch):
     # print("Read: \"%s\"\nMax Difference Threshold: %d" % (read, mismatch))
     matches, D = inexact(read, mismatch, array, length, c, O, O_rev, a)
