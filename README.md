@@ -14,10 +14,18 @@ After cloning our github repository, please run the following command:
 python3 testing_new.py
 ```
 
+If you would like to run your own alignment using a different database and different reads, you can use the align_tool function.
+Please keep database in a fasta file, have the read in string format, decided on maximum_mismatch, use a=0 for exact matching, and (import align_tool.py) call the function:
+
+``` 
+align_tool(fasta_file, read, max_mismatch, a)
+```
+
 ## 📂 Files and repository structure
 
 |   FileName     |    Description   |  Link   |
 | :-------------: |:-------------:| :-----:|
+| align_tool.py | Alignment Tool for one Read |  [🔗](https://github.com/jinny0909/GenomicsTeam48/blob/main/align_tool.py) |
 | blosum.py | Local Alignment using Dynamic Programming and BLOSUM 62 |  [🔗](https://github.com/jinny0909/GenomicsTeam48/blob/main/blosum.py) |
 | bowtie.py | Bowtie Alignment implementation | [🔗](https://github.com/jinny0909/GenomicsTeam48/blob/main/bowtie.py) |  |
 | bwa.py | BWA Alignment implementation | [🔗](https://github.com/jinny0909/GenomicsTeam48/blob/main/bwa.py)  |
@@ -47,4 +55,5 @@ Although bowtie is not fully implemented, I have referred to the existing public
 - https://github.com/DonQwerty/Genome-Aligners/blob/master/src/bowtie.cpp A lot of the class and function structures are referred from this respository. 
 
 ### Hee Yun
-
+- Because the BWA paper by Li and Durbin had very specific pseudo-code, that was followed.  This also means my code is similar to others (like the one I found below).
+- https://github.com/Jwomers/burrows_wheeler_alignment/blob/012f2d97ab609c5d4404faab0dfac07d85896b7a/BWA.py
