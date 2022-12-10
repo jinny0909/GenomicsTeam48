@@ -1,6 +1,7 @@
 # referred to official bowtie repository & other implemntation
 # sources: 
 # sources also cited in the written report 
+# bowtie alignment implemention was not fully completed, but we have added explanation in the final repot 
 
 # base quality is not accounted in this implementation 
 SEED = 28 
@@ -143,17 +144,16 @@ def updateStartEnd(idx, pattern, length):
     i = len(pattern) - 1 
     c = pattern[i] 
 
-    sp_aux = idx.count[c] - 1
-    ep_aux = idx.count[c] - 1 
+    start, end = idx.count[c] - 1, idx.count[c] - 1 
     i -= 1 
 
-    while (sp_aux < ep_aux and i >= length): 
+    while (start < end and i >= length): 
         c = pattern[i]
-        sp_aux = idx.count[c] + idx.O[c][sp_aux] -  1
-        ep_aux = idx.count[c] + idx.O[c][ep_aux] - 1 
+        start = idx.count[c] + idx.O[c][start] -  1
+        end = idx.count[c] + idx.O[c][end] - 1 
         i -= 1 
 
-    return sp_aux, ep_aux 
+    return start, end
 
     
 def inex_recur(W, i, minPos, z, k, l, C, O, alphabet, exact):
@@ -165,7 +165,7 @@ def inex_recur(W, i, minPos, z, k, l, C, O, alphabet, exact):
         else: 
             return None 
 
-    inter = Range()
+    new_range = Range()
 
     if (z > 0): 
         for char in alphabet:
@@ -174,20 +174,20 @@ def inex_recur(W, i, minPos, z, k, l, C, O, alphabet, exact):
             L = C[char] + O[char][l] - 1 
             if K < L:  
                 if char == W[i]:  # correct alignment
-                    aux = inex_recur(W, i - 1, minPos, z, K, L, C, O, alphabet)
+                    range = inex_recur(W, i - 1, minPos, z, K, L, C, O, alphabet)
                 else:  # z decrements because of mismatch 
-                    aux = inex_recur(W, i - 1, minPos,  z - 1, K, L, C, O, alphabet, exact)
+                    range = inex_recur(W, i - 1, minPos,  z - 1, K, L, C, O, alphabet, exact)
 
-                inter = joinRanges(aux, inter)
+                new_range = joinRanges(range, new_range)
     else:
         char = W[i]
         K = C[char] + O[char][k] - 1
         L = C[char] + O[char][l] -1
         if K < L: 
-            inter = inex_recur(W, i-1, minPos,  z, K, L, C, O, alphabet, exact)
+            new_range = inex_recur(W, i-1, minPos,  z, K, L, C, O, alphabet, exact)
 
 
-    return inter
+    return new_range
 
 reference = """KKKKLKKKKKKKKKKKKKKKKKKKKKKKKKKKKMFENITAAPADPILGLADLFRADERPGKINLGIGVYKDETGKTPVLTSVKKAEQYLLENETTKNYLGIDGIPEFGRCTQELLFGKGSALINDKRARTAQTPGGTGALRVAADFLAKNTSVKRVWVSNPSWPNHKSVFNSAGLEVREYAYYDAENHTLDFDALINSLNEAQAGDVVLFHGCCHNPTGIDPTLEQWQTLAQLSVEKGWLPLFDFAYQGFARGLEEDAEGLRAFAAMHKELIVASSYSKNFGLYNERVGACTLVAADSETVDRAFSQMKAAIRANYSNPPAHGASVVATILSNDALRAIWEQELTDMRQRIQRMRQLFVNTLQEKGANRDFSFIIKQNGMFSFSGLTKEQVLRLREEFGVYAVASGRVNVAGMTPDNMAPLCEAIVAVL"""
 reference = reference + '$'
@@ -210,7 +210,7 @@ def exactMatch(fmi, pattern):
         print(fmi[i])
 
 
-def case1(mirrorIdx, rev_read, mismatches, a):
+def firstPhase(mirrorIdx, rev_read, mismatches, a):
     sp, ep = 0, int(len(rev_read) - SEED / 2)
     if (sp >= ep): 
         return 
@@ -231,7 +231,7 @@ def case1(mirrorIdx, rev_read, mismatches, a):
 
     return pos
 
-def case2(forwardIdx, mirrorIdx, pattern, mismatch, a): 
+def secondPhase(forwardIdx, mirrorIdx, pattern, mismatch, a): 
     sp, ep = updateStartEnd(forwardIdx, pattern[0:SEED], int(SEED)/2)
     if(sp >= ep): 
         return 
@@ -251,13 +251,12 @@ def case2(forwardIdx, mirrorIdx, pattern, mismatch, a):
     return pos 
 
 # when less than 1 mismatch allowed 
-
 # set number of mismatch you want to allow 
 mm = 1 
 if mm == 0:
-    case1(mirrorIdx, rev_read, 1, alphabet)
+    firstPhase(mirrorIdx, rev_read, 1, alphabet)
 if mm == 1: 
-    case1(mirrorIdx, rev_read, 1, alphabet)
-    case2(forwardIdx, read, 1, alphabet)
+    firstPhase(mirrorIdx, rev_read, 1, alphabet)
+    secondPhase(forwardIdx, read, 1, alphabet)
 
 
