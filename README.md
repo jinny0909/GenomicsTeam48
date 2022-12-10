@@ -5,6 +5,10 @@ JHU Fall 22 Computational Genomics
 
 Alignment at the amino acid level has multiple advantages over alignment at the nucleotide level, primarily because of the larger amino acid alphabet and consequently lower signal-to-noise ratio within amino acid sequences compared to DNA [6]. Based on the methods employed by Bowtie[3], BWA[4], and PALADIN[7], we aimed to implement a simple protein sequence aligner capable of efficiently storing and querying a database of proteins using generated reads and different alignment algorithms.
 
+##  ▶️ Running our code
+
+Description goes here
+
 ## 📂 Files and repository structure
 
 |   FileName     |    Description   |  Link   |
@@ -35,8 +39,7 @@ Alignment at the amino acid level has multiple advantages over alignment at the 
 
 Although bowtie is not fully implemented, I have referred to the existing public repositories for bowtie implentation. 
 - official bowtie repository:  https://github.com/BenLangmead/bowtie
-- https://github.com/DonQwerty/Genome-Aligners/blob/master/src/bowtie.cpp
-  A lot of the class and function structures are referred from this respository. 
+- https://github.com/DonQwerty/Genome-Aligners/blob/master/src/bowtie.cpp A lot of the class and function structures are referred from this respository. 
 
 ### Hee Yun
 
