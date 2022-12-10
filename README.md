@@ -7,7 +7,12 @@ Alignment at the amino acid level has multiple advantages over alignment at the 
 
 ##  ▶️ Running our code
 
-Description goes here
+All our BWA alignment, FM index, DP local alignment are called from ```testing_new.py``` file. 
+After cloning our github repository, please run the following command:
+
+``` 
+python3 testing_new.py
+```
 
 ## 📂 Files and repository structure
 
