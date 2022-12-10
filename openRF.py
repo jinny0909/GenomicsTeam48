@@ -88,7 +88,7 @@ def longestORF(seq):
   return longest
 
 def bestFrame(seqs):
-  longest = len(seqs)*0.85
+  longest = len(seqs[0])*0.85
   best = []
   for s in seqs:
     ORF = longestORF(s)

@@ -1,6 +1,7 @@
+# Computational Genomics
+# Team 48
 """Burrows-Wheeler Alignment - Protein Search
 This is a simple implementation of the BMA for protein sequencing."""
-
 
 def precalculation(ref):
     # create variables
@@ -96,19 +97,6 @@ def calculateD(W, n, C, O_rev):
 
     return D
 
-
-# # other implementation
-# def calculateD(W, n, C, O):
-#     z = 0
-#     j = 0
-#     D = list()
-#     for i in range(len(W) - 1):
-#         if W[j:i]:
-#             z += 1
-#             j = i + 1
-#         D.append(z) #TODO: not substring
-#     return D
-
 def check_D(D, i):
     if i < 0:
         return 0
@@ -128,7 +116,7 @@ def inex_recur(W, i, z, k, l, D, C, O, alphabet):
     if z < check_D(D, i):
         return set()
     if i < 0:  # entire query matched
-        for m in range(k, l + 1):  ## TODO: check
+        for m in range(k, l + 1):
             tempset.add(m)
         return tempset
 
@@ -150,7 +138,7 @@ def inex_recur(W, i, z, k, l, D, C, O, alphabet):
 
 
 def bwa(read, array, c, O, O_rev, length, a, proteins, mismatch):
-    print("Read: \"%s\"\nMax Difference Threshold: %d\n" % (read, mismatch))
+    # print("Read: \"%s\"\nMax Difference Threshold: %d" % (read, mismatch))
     matches, D = inexact(read, mismatch, array, length, c, O, O_rev, a)
 
     # check if match overlaps with terminator
@@ -159,7 +147,7 @@ def bwa(read, array, c, O, O_rev, length, a, proteins, mismatch):
     output = set()
     for match in matches:
         for p in proteins.keys():
-            if match < p:
+            if match + (len(read) - threshold) < p: # terminator can be at the beginning
                 next = p
                 break
 
@@ -170,7 +158,7 @@ def bwa(read, array, c, O, O_rev, length, a, proteins, mismatch):
         else:
             output.add(proteins[next])
 
-    print("%d match(es)\n" % (len(output)))
-    print("Matched proteins: %s" % output)
+    # print("%d match(es)" % (len(output)))
+    # print("Matched proteins: %s\n" % output)
 
     return output
