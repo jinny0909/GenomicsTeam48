@@ -34,5 +34,9 @@ Alignment at the amino acid level has multiple advantages over alignment at the 
 ### Kyoungjin 
 
 Although bowtie is not fully implemented, I have referred to the existing public repositories for bowtie implentation. 
-- https://github.com/BenLangmead/bowtie
+- official bowtie repository:  https://github.com/BenLangmead/bowtie
 - https://github.com/DonQwerty/Genome-Aligners/blob/master/src/bowtie.cpp
+  A lot of the class and function structures are referred from this respository. 
+
+### Hee Yun
+
